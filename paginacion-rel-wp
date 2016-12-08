@@ -1,0 +1,34 @@
+/*
+Está función obtine una paginación completa si estamos en el home,
+en una categoría o en una etiqueta.
+Posteriormente separa las urls anterior y siguiente a la página en curso,
+para insertarlos en la cabecera html dentro de una etiqueta &quot;link&quot; con
+el correspondiente atributo rel=prev/next.
+*/
+function next_prev(){
+    global $wp_query;
+    $valor_alto = 999999999;
+    $paginacion_completa=paginate_links(
+    array(
+    'base' =&gt; str_replace( $valor_alto, '%#%', get_pagenum_link( $valor_alto ) ),
+    'format' =&gt; '?paged=%#%',
+    'current' =&gt; max( 1, get_query_var('paged') ),
+    'total' =&gt;$wp_query-&gt;max_num_pages)
+    );
+    $array_paginacion=explode(&quot;&lt;/a&gt;&quot;,$paginacion);
+    foreach ($array_paginacion as $enlace)
+        {
+        if (strrpos($enlace,&quot;Siguiente&quot;))
+        {
+        preg_match('(http://&quot;?.*&quot;)',$enlace,$matches,PREG_OFFSET_CAPTURE,3);
+        $siguiente=explode('&quot;',$matches[0][0]);
+        echo &quot;&lt;link rel=\&quot;next\&quot; href=\&quot;&quot;.$siguiente[0].&quot;\&quot;/&gt;\n&quot;;
+        }
+        if (strrpos($enlace,&quot;Anterior&quot;))
+        {
+        preg_match('(http://&quot;?.*&quot;)',$enlace,$matches,PREG_OFFSET_CAPTURE,3);
+        $anterior=explode('&quot;',$matches[0][0]);
+        echo &quot;&lt;link rel=\&quot;prev\&quot; href=\&quot;&quot;.$anterior[0].&quot;\&quot;/&gt;\n&quot;;
+        }
+        }
+    }
